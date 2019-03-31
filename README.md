@@ -28,7 +28,7 @@ captcha = captcha('D:\\Code\\TensorFlow-Train\\data-train\\')
 # 训练
 captcha.train_captcha_cnn()
 ```
-![](Snipaste_2019-03-31_12-13-54.png])
+![](./Snipaste_2019-03-31_12-13-54.png)
 
 ```
 # 测试验证码数据的存放位置
@@ -36,11 +36,28 @@ captcha = captcha('D:\\Code\\TensorFlow-Train\\data-train\\')
 # 测试
 captcha.test_captcha_cnn()
 ```
-![](Snipaste_2019-03-31_12-18-44.png)
+![](./Snipaste_2019-03-31_12-18-44.png)
+
+## 展示
+当然，我们在黑框中进行展示，效果不太好。通过[Flask](https://github.com/pallets/flask)搭建了一个前端展示页面，来进行验证码的生成和识别。
+![](./flask.gif)
+
+- 代码：[./flask/](./flask/)
+- [模型](./flask/model/)：使用模型结构和参数可以在[number_captcha_cnn.py](./flask/number_captcha_cnn.py)中参看。模型使用15万张`captcha`生成的160*60的图片进行训练，噪点采用默认设置，迭代次数为15万次，实际准确率在87%左右。
+- 如果想要替换成自己的模型，下面需要注意：
+![](./Snipaste_2019-03-31_13-19-05.png)
+![](./Snipaste_2019-03-31_13-19-15.png)
+- 模型大小超过100MB，所以他其进行压缩，下载完需要进行解压处理。
+![](。Snipaste_2019-03-31_13-17-06.png)
+![](Snipaste_2019-03-31_13-17-49.png)
+- 首次进入展示页面，需要点击生成验证码图片，因为最开始的8张图片仅仅用于展示而已。
+
 
 ## 参考链接
 [TensorFlow练习20: 使用深度学习破解字符验证码](http://blog.topspeedsnail.com/archives/10858)
+
 [Tensorflow实战（二）：Discuz验证码识别](https://cuijiahua.com/blog/2018/01/dl_5.html)
+
 [李宏毅机器学习(2017)](https://www.bilibili.com/video/av10590361)
 
 

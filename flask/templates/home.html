@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{url_for('static', filename='captcha.ico')}}">
+
+    <title>基于Tensorflow的验证码识别</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="{{url_for('static', filename='ie10-viewport-bug-workaround.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{url_for('static', filename='starter-template.css')}}" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{url_for('static', filename='ie-emulation-modes-warning.js')}}"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script src="{{url_for('static', filename='jquery.min.js')}}"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="{{url_for('static', filename='bootstrap.min.js.')}}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{url_for('static', filename='ie10-viewport-bug-workaround.js')}}"></script>
+
+    <script type="text/javascript">
+        
+        var number_success = 0
+        var number_error = 0
+
+        var captcha_number_flag = 0
+        function captcha_number(){
+            var shade=document.getElementById("loading");
+            shade.style.display="block";
+            $.ajax({
+                type:"GET",
+                url:"/captcha_number",
+                dataType:"json",
+                success:function(data){
+                    document.getElementById("dir").innerHTML = data.dir
+                    file = data.file
+                    captcha = data.captcha
+                    for(i = 0;i < 8;i++){
+                        $(".captcha")[i].src = file[i]
+                        $(".correct-result")[i].value = captcha[i]
+                        $(".prediction_result")[i].value = ''
+                        $('.prediction_result').parent().removeClass('has-success')
+                        $('.prediction_result').parent().removeClass('has-error')
+                        $("span").remove(".flag")
+                        captcha_number_flag = 0
+                    }
+                    shade.style.display="none";
+                    console.log(ldz)
+                },
+                error:function(){
+                    alert("captcha_number error")
+                    shade.style.display="none";
+                }
+            });
+        }
+        function captcha(){
+            alert("captcha")
+            var shade=document.getElementById("loading");
+        }
+        function recognize_number(){
+            if(captcha_number_flag == 1) return;
+            var shade=document.getElementById("loading");
+            shade.style.display="block";
+            dir = document.getElementById("dir").innerHTML
+            $.ajax({
+                type:"GET",
+                url:"/recognize_number/"+dir,
+                dataType:"json",
+                success:function(data){
+                    correct = data.correct
+                    correct_result = data.correct_result
+                    prediction_result = data.prediction_result
+                    html_correct_result = $('.correct-result')
+                    for(i = 0; i < 8;i ++){
+                        for(j = 0; j < 8; j++){
+                            if(html_correct_result[i].value == correct_result[j]){
+                                div = $(html_correct_result[i]).parent().parent()
+                                div.next().children().first().children().last().val(prediction_result[j])
+                                
+                                if(prediction_result[j] == html_correct_result[i].value){
+                                    div.next().children().first().addClass('has-success')
+                                    div.next().children().first().append('<span class="input-group-addon flag">√</span>')
+                                    number_success = number_success + 1
+                                }else{
+                                    div.next().children().first().addClass('has-error')
+                                    div.next().children().first().append('<span class="input-group-addon flag">×</span>')
+                                    number_error = number_error + 1
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    shade.style.display="none";
+                    captcha_number_flag = 1
+                },
+                error:function(){
+                    alert("recognize_number error")
+                    shade.style.display="none";
+                }
+            });
+            console.log("number_success="+ number_success + ",number_error=" + number_error + ".rate=" + number_success / (number_error + number_success))
+        }
+        function recongize(){
+            alert("recongize")
+            var shade=document.getElementById("loading");
+        }
+    </script>
+
+    <style type="text/css">
+        #loading{
+            position:fixed;
+	        top: 0;
+	        left: 0;
+	        display: none;
+	        width: 100%;
+	        height: 100%;
+	        z-index: 150;
+	        text-align: center;
+	        background:#333;
+	        opacity:0.6;  /*透明度*/
+        }
+    </style>
+
+  </head>
+
+  <body>
+
+    
+    
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">基于Tensorflow的验证码识别</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#"> </a></li>
+            <li><a href="#"> </a></li>
+            <li><a href="#"> </a></li>
+            <li><a href="#" id="captcha_number" onclick="captcha_number()">生成数字验证码</a></li>
+            <!-- <li><a href="#" id="captcha" onclick="captcha()">生成混合验证码</a></li> -->
+            <li><a href="#" id="recognize_number" onclick="recognize_number()">识别数字验证码</a></li>
+            <!-- <li><a href="#" id="recongize" onclick="recongize()">识别混合验证码</a></li> -->
+            <li><p id="dir"> </p></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div id="loading">
+        <img src="{{url_for('static', filename='Ellipsis-1.8s-200px.gif')}}" style="margin-top: 200px;">
+    </div>
+
+    
+    <!-- =============================== -->
+    <div class="container">
+
+      <br>
+      <br>
+      <br>
+      <div class="row">
+        
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='BvQtM_2753.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='CZzCW_8565.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>                    
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='mRHqp_1761.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='oX8Mo_3787.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='RAn7Q_3422.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='t9gn5_4019.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon has-success" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='Y4AO2_7707.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail">
+                <div class="input-group has-success">
+                    <span class="input-group-addon" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <img class="center-block captcha" src="{{url_for('static', filename='BvQtM_2753.jpg')}}" alt="test" height="75" width="200">
+            <br>
+            <div class="thumbnail captcha">
+                <div class="input-group has-success">
+                    <span class="input-group-addon has-success" id="basic-addon3">正确结果</span>
+                    <input type="text" class="form-control correct-result" disabled="disabled" aria-describedby="basic-addon3">
+                    <span class="input-group-addon">√</span>
+                </div>  
+            </div>
+            <div class="thumbnail">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">预测结果</span>
+                    <input type="text" class="form-control prediction_result" disabled="disabled" aria-describedby="basic-addon3">
+                </div>  
+            </div>
+          </div>
+      </div>
+
+    </div><!-- /.container -->
+    <!-- =============================== -->
+
+    
+
+</body></html>
