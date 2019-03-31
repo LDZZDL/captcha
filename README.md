@@ -15,7 +15,7 @@
 
 # 训练和测试
 在[dataset.py](dataset.py)中，我们需要修改图片的大小和字符集合的大小。
-![](Snipaste_2019-03-31_12-05-38.png)
+![](./images/Snipaste_2019-03-31_12-05-38.png)
 PS:如果我们需要对数字+字母的混合验证码进行修改，我们需要集合集合的大小。
 
 在[captcha_cnn.py](captcha_cnn.py)中
@@ -28,7 +28,7 @@ captcha = captcha('D:\\Code\\TensorFlow-Train\\data-train\\')
 # 训练
 captcha.train_captcha_cnn()
 ```
-![](./Snipaste_2019-03-31_12-13-54.png)
+![](./images/Snipaste_2019-03-31_12-13-54.png)
 
 ```
 # 测试验证码数据的存放位置
@@ -36,20 +36,20 @@ captcha = captcha('D:\\Code\\TensorFlow-Train\\data-train\\')
 # 测试
 captcha.test_captcha_cnn()
 ```
-![](./Snipaste_2019-03-31_12-18-44.png)
+![](./images/Snipaste_2019-03-31_12-18-44.png)
 
 ## 展示
 当然，我们在黑框中进行展示，效果不太好。通过[Flask](https://github.com/pallets/flask)搭建了一个前端展示页面，来进行验证码的生成和识别。
-![](./flask.gif)
+![](./images/flask.gif)
 
 - 代码：[./flask/](./flask/)
 - [模型](./flask/model/)：使用模型结构和参数可以在[number_captcha_cnn.py](./flask/number_captcha_cnn.py)中参看。模型使用15万张`captcha`生成的160*60的图片进行训练，噪点采用默认设置，迭代次数为15万次，实际准确率在87%左右。
 - 如果想要替换成自己的模型，下面需要注意：
-![](./Snipaste_2019-03-31_13-19-05.png)
-![](./Snipaste_2019-03-31_13-19-15.png)
+![](./images/Snipaste_2019-03-31_13-19-05.png)
+![](./images/Snipaste_2019-03-31_13-19-15.png)
 - 模型大小超过100MB，所以他其进行压缩，下载完需要进行解压处理。
-![](。Snipaste_2019-03-31_13-17-06.png)
-![](Snipaste_2019-03-31_13-17-49.png)
+![](./images/Snipaste_2019-03-31_13-17-06.png)
+![](./images/Snipaste_2019-03-31_13-17-49.png)
 - 首次进入展示页面，需要点击生成验证码图片，因为最开始的8张图片仅仅用于展示而已。
 
 
